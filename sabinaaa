@@ -1,0 +1,28 @@
+# Бастапқы библиотекаларды импорттау
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import VotingClassifier
+from sklearn.metrics import accuracy_score
+
+# Деректер жүйесін жасау
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(iris.data, iris.target, test_size=0.2, random_state=42)
+
+# Көмекші классификаторларды жасау
+rf_classifier = RandomForestClassifier(n_estimators=50, random_state=42)
+svm_classifier = SVC(probability=True, random_state=42)
+lr_classifier = LogisticRegression(random_state=42)
+
+# Квазилинейлі композицияны жасау
+voting_classifier = VotingClassifier(estimators=[('rf', rf_classifier), ('svm', svm_classifier), ('lr', lr_classifier)], voting='soft')
+
+# Квазилинейлі композицияны оқу
+voting_classifier.fit(X_train, y_train)
+
+# Натижаны тексеру
+y_pred = voting_classifier.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Квазилинейлі композицияны тегін сынақтау дайындалды: {accuracy}")
